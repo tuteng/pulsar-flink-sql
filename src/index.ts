@@ -13,14 +13,14 @@ import { Message } from '@lumino/messaging';
 
 import { Widget } from '@lumino/widgets';
 
-interface APODResponse {
+interface IAPODResponse {
   copyright: string;
   date: string;
   explanation: string;
   media_type: 'video' | 'image';
   title: string;
   url: string;
-};
+}
 
 class APODWidget extends Widget {
   /**
@@ -68,7 +68,7 @@ class APODWidget extends Widget {
       return;
     }
 
-    const data = (await response.json()) as APODResponse;
+    const data = (await response.json()) as IAPODResponse;
 
     if (data.media_type === 'image') {
       // Populate the image
@@ -99,7 +99,7 @@ class APODWidget extends Widget {
 /**
  * Activate the APOD widget extension.
  */
- function activate(
+function activate(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
   restorer: ILayoutRestorer
@@ -110,7 +110,7 @@ class APODWidget extends Widget {
   let widget: MainAreaWidget<APODWidget>;
 
   // Add an application command
-  const command: string = 'apod:open';
+  const command = 'apod:open';
   app.commands.addCommand(command, {
     label: 'Random Astronomy Picture',
     execute: () => {
@@ -142,7 +142,7 @@ class APODWidget extends Widget {
   palette.addItem({ command, category: 'Tutorial' });
 
   // Track and restore the widget state
-  let tracker = new WidgetTracker<MainAreaWidget<APODWidget>>({
+  const tracker = new WidgetTracker<MainAreaWidget<APODWidget>>({
     namespace: 'apod'
   });
   restorer.restore(tracker, {
@@ -154,7 +154,7 @@ class APODWidget extends Widget {
 /**
  * Initialization data for the pulsar-flink-sql extension.
  */
- const extension: JupyterFrontEndPlugin<void> = {
+const extension: JupyterFrontEndPlugin<void> = {
   id: 'pulsar-flink-sql',
   autoStart: true,
   requires: [ICommandPalette, ILayoutRestorer],
