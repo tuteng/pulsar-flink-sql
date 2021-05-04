@@ -53,13 +53,8 @@ function activate(
   palette.addItem({ command, category: 'Tutorial' });
 
   // Track and restore the widget state
-<<<<<<< HEAD
   const tracker = new WidgetTracker<PulsarFinkSQLWidget>({
     namespace: 'pulsar'
-=======
-  const tracker = new WidgetTracker<MainAreaWidget<APODWidget>>({
-    namespace: 'apod'
->>>>>>> 3e8cd75 (Fix code format)
   });
   restorer.restore(tracker, {
     command,
