@@ -19,7 +19,7 @@ export class PulsarFinkSQLWidget extends BoxPanel {
     this.editor.widget.id = 'pulsar-flink-sql-editor';
 
     this.addWidget(this.editor.widget);
-    this.editor.widget.stateChanged.connect(this._send_sql, this);
+    this.editor.widget.stateChanged.connect(this._sendSQL, this);
   }
 
   readonly editor: IEditor;
@@ -33,7 +33,7 @@ export class PulsarFinkSQLWidget extends BoxPanel {
     sessionStorage.setItem('session_id', session_id);
   }
 
-  private async _send_sql(emitter: Widget, content: string): Promise<void> {
+  private async _sendSQL(emitter: Widget, content: string): Promise<void> {
     const response = await Api.postSQL(content);
     console.log('Data has been received from backend', response);
   }

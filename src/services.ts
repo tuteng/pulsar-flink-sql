@@ -30,23 +30,32 @@ export namespace Api {
 
   export async function getFlinkSession(): Promise<ISessionResponse> {
     const settings = ServerConnection.makeSettings();
-    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'sessions');
+    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'gateway');
     const requestInit: RequestInit = {
       method: 'POST',
-      body: JSON.stringify({ planner: 'blink', execution_type: 'streaming' })
+      body: JSON.stringify({
+        url: 'v1/sessions',
+        data: {
+          planner: 'blink',
+          execution_type: 'streaming'
+        }
+      })
     };
     const response = await requestAPI(requestUrl, requestInit);
     const data = await response.json();
     return data;
   }
 
-  export async function postSQL(sql: string): Promise<ISessionResponse> {
+  export async function postSQL(statement: string): Promise<ISessionResponse> {
     const sessionID = sessionStorage.getItem('session_id');
     const settings = ServerConnection.makeSettings();
-    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'statements');
+    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'gateway');
     const requestInit: RequestInit = {
       method: 'POST',
-      body: JSON.stringify({ session_id: sessionID, statement: sql })
+      body: JSON.stringify({
+        url: `/v1/sessions/${sessionID}/statements`,
+        data: { statement }
+      })
     };
     const response = await requestAPI(requestUrl, requestInit);
     const data = await response.json();
