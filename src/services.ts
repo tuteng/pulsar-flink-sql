@@ -6,16 +6,20 @@ interface ISessionResponse {
 }
 
 export namespace Api {
-  export async function requestAPI(
-    url = '',
-    init: RequestInit = {}
-  ): Promise<Response> {
+  export async function requestAPI(init: RequestInit = {}): Promise<Response> {
+    const PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
+    init.method = 'POST';
+    init.headers = {
+      PulsarCloudAuth
+    };
+
     // Make request to Jupyter API
     const settings = ServerConnection.makeSettings();
+    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'gateway');
 
     let response: Response;
     try {
-      response = await ServerConnection.makeRequest(url, init, settings);
+      response = await ServerConnection.makeRequest(requestUrl, init, settings);
     } catch (error) {
       throw new ServerConnection.NetworkError(error);
     }
@@ -29,35 +33,43 @@ export namespace Api {
   }
 
   export async function getFlinkSession(): Promise<ISessionResponse> {
-    const settings = ServerConnection.makeSettings();
-    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'gateway');
     const requestInit: RequestInit = {
-      method: 'POST',
       body: JSON.stringify({
-        url: 'v1/sessions',
+        url: '/v1/sessions',
+        method: 'POST',
         data: {
           planner: 'blink',
           execution_type: 'streaming'
         }
       })
     };
-    const response = await requestAPI(requestUrl, requestInit);
+    const response = await requestAPI(requestInit);
     const data = await response.json();
     return data;
   }
 
+  export async function closeFlinkSession(sessionID: string): Promise<void> {
+    const requestInit: RequestInit = {
+      body: JSON.stringify({
+        method: 'DELETE',
+        url: `/v1/sessions/${sessionID}`
+      })
+    };
+    const response = await requestAPI(requestInit);
+    console.log(response);
+  }
+
   export async function postSQL(statement: string): Promise<ISessionResponse> {
     const sessionID = sessionStorage.getItem('session_id');
-    const settings = ServerConnection.makeSettings();
-    const requestUrl = URLExt.join(settings.baseUrl, 'v1', 'gateway');
     const requestInit: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
+        method: 'POST',
         url: `/v1/sessions/${sessionID}/statements`,
         data: { statement }
       })
     };
-    const response = await requestAPI(requestUrl, requestInit);
+    const response = await requestAPI(requestInit);
     const data = await response.json();
     return data;
   }

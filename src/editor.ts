@@ -20,6 +20,7 @@ export class Editor implements IEditor {
   constructor(initialValue: string, editorFactory: IEditorFactoryService) {
     this._model = new CodeEditor.Model({ value: initialValue });
     this._widget = new EditorWidget(this._model, editorFactory);
+    this._model.mimeType = 'text/x-sql';
   }
 
   get value(): string {
@@ -41,12 +42,12 @@ export class EditorWidget extends CodeEditorWrapper {
       factory: editorFactory.newInlineEditor
     });
 
+    this.addClass('pf-sql-editor');
     this.editor.addKeydownHandler((_, evt) => this._onKeydown(evt));
   }
 
   private _onKeydown(event: KeyboardEvent): boolean {
     if (event.key === 'Enter' && !event.shiftKey) {
-      console.log(event);
       const content = this.model.value.text;
       this._stateChanged.emit(content);
       return true;
