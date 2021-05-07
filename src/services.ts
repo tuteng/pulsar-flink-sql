@@ -74,15 +74,21 @@ export namespace Api {
   }
 
   export async function getDataFromJob(
-    jobID: string,
-    token: number
+    job: string,
+    token?: number
   ): Promise<any> {
     const sessionID = sessionStorage.getItem('session_id');
+
+    let url = job;
+    if (token !== undefined) {
+      url = `/v1/sessions/${sessionID}/jobs/${job}/result/${token}`;
+    }
+
     const requestInit: RequestInit = {
       method: 'POST',
       body: JSON.stringify({
         method: 'GET',
-        url: `/v1/sessions/${sessionID}/jobs/${jobID}/result/${token}`
+        url
       })
     };
     const response = await requestAPI(requestInit);

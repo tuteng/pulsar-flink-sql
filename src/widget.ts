@@ -60,12 +60,10 @@ export class PulsarFinkSQLWidget extends BoxPanel {
       const jobID = response.results[0].data[0][0];
       sessionStorage.setItem('job_id', jobID);
 
-      let token = 0;
-      setTimeout(async () => {
-        const response = await Api.getDataFromJob(jobID, token);
-        token++;
-        this.dataView.data = response.results[0];
-      }, 5000);
+      const token = 0;
+      const res = await Api.getDataFromJob(jobID, token);
+      this.dataView.data = res.results[0];
+      this._jobCallback(res.next_result_uri);
     } else {
       this.dataView.data = response.results[0];
     }
@@ -86,5 +84,16 @@ export class PulsarFinkSQLWidget extends BoxPanel {
       await Api.closeFlinkSession(sessionID);
       sessionStorage.removeItem('session_id');
     }
+  }
+
+  private async _jobCallback(nextUrl: string) {
+    const response = await Api.getDataFromJob(nextUrl);
+    const { data } = response.results[0];
+    const dataCompose = this.dataView.data.data.concat(data);
+    this.dataView.data = {
+      columns: this.dataView.data.columns,
+      data: dataCompose
+    };
+    setTimeout(async () => this._jobCallback(response.next_result_uri), 5000);
   }
 }
