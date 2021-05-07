@@ -22,7 +22,7 @@ class GateWayHandler(APIHandler):
         request_url = 'https://fnk-sql.guosijie.test.sn2.dev' + url
         headers = {
             'Content-Type': 'application/json',
-            'Authorization': auth,
+            'Authorization': 'Bearer ' + auth,
         }
         if (method == 'POST'):
             r = requests.post(request_url, data=json.dumps(data), headers=headers)
