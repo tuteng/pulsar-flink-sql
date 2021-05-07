@@ -6,7 +6,6 @@ import {
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 import { InputDialog } from '@jupyterlab/apputils';
 import { IStateDB } from '@jupyterlab/statedb';
-// import { ReadonlyJSONObject } from '@lumino/coreutils';
 
 import { PulsarFinkSQLWidget } from './widget';
 
