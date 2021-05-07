@@ -4,7 +4,6 @@ import {
   CodeEditorWrapper
 } from '@jupyterlab/codeeditor';
 
-// import { Widget } from '@lumino/widgets';
 import { ISignal, Signal } from '@lumino/signaling';
 
 export interface IEditor {

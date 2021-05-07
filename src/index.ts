@@ -40,7 +40,6 @@ function activate(
       }
 
       let PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
-      console.log(data, 111);
       if (!PulsarCloudAuth) {
         PulsarCloudAuth = (data as ReadonlyJSONObject)[
           'PulsarCloudAuth'

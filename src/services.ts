@@ -55,8 +55,7 @@ export namespace Api {
         url: `/v1/sessions/${sessionID}`
       })
     };
-    const response = await requestAPI(requestInit);
-    console.log(response);
+    await requestAPI(requestInit);
   }
 
   export async function postSQL(statement: string): Promise<ISessionResponse> {

@@ -2,8 +2,6 @@ import { Signal, ISignal } from '@lumino/signaling';
 
 import { Toolbar, ToolbarButton } from '@jupyterlab/apputils';
 
-// import { ToolbarItems } from '../components';
-
 interface IOptions {
   onClick: () => void;
 }
@@ -30,30 +28,21 @@ export class TopToolbar extends Toolbar {
   constructor() {
     super();
     this.addClass('pf-sql-toolbar');
-    this.addItem('run', new RunButton({ onClick: this._onBackButtonClicked }));
+    this.addItem('run', new RunButton({ onClick: this._onRunButtonClicked }));
     this.addItem(
       'setting',
-      new SettingButton({ onClick: this._onBackButtonClicked })
+      new SettingButton({ onClick: this._onRunButtonClicked })
     );
     this.addItem('spacer', Toolbar.createSpacerItem());
-    // console.log(this.node);
-    // this.addItem('url', new ToolbarItems.ConnectionUrlItem('connectionUrl'));
-    // this.addItem('loading', this._loadingIcon);
   }
 
   get backButtonClicked(): ISignal<this, void> {
-    return this._backButtonClicked;
+    return this._runButtonClicked;
   }
 
-  private _onBackButtonClicked(): void {
-    console.log('run');
-    // this._backButtonClicked.emit(void 0);
+  private _onRunButtonClicked(): void {
+    // this._backRunClicked.emit(void 0);
   }
 
-  // setLoading(isLoading: boolean) {
-  //   this._loadingIcon.setLoading(isLoading);
-  // }
-
-  // private readonly _loadingIcon: ToolbarItems.LoadingIcon = new ToolbarItems.LoadingIcon();
-  private readonly _backButtonClicked: Signal<this, void> = new Signal(this);
+  private readonly _runButtonClicked: Signal<this, void> = new Signal(this);
 }
