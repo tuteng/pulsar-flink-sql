@@ -24,10 +24,12 @@ class GateWayHandler(APIHandler):
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + auth,
         }
-        if (method == 'POST'):
+        if method == 'POST':
             r = requests.post(request_url, data=json.dumps(data), headers=headers)
-        else:
+        elif method == 'DELETE':
             r = requests.delete(request_url, headers=headers)
+        else:
+            r = requests.get(request_url, headers=headers)
 
         self.finish(r.text)
 

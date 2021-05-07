@@ -33,6 +33,12 @@ export class DataGridPanel extends StackedPanel {
   set data(sqlData: ISQLResult) {
     this._model = new SQLDataModel(sqlData.columns, sqlData.data);
     this._grid.dataModel = this._model;
+    sqlData.data.forEach((_, index) => {
+      const size = 120;
+      this._grid.resizeColumn('row-header', index, size);
+      this._grid.resizeColumn('body', index, size);
+    });
+
     this._grid.show();
   }
 

@@ -72,4 +72,34 @@ export namespace Api {
     const data = await response.json();
     return data;
   }
+
+  export async function getDataFromJob(
+    jobID: string,
+    token: number
+  ): Promise<any> {
+    const sessionID = sessionStorage.getItem('session_id');
+    const requestInit: RequestInit = {
+      method: 'POST',
+      body: JSON.stringify({
+        method: 'GET',
+        url: `/v1/sessions/${sessionID}/jobs/${jobID}/result/${token}`
+      })
+    };
+    const response = await requestAPI(requestInit);
+    const data = await response.json();
+    return data;
+  }
+
+  export async function closeFlinkJob(
+    sessionID: string,
+    jobID: string
+  ): Promise<void> {
+    const requestInit: RequestInit = {
+      body: JSON.stringify({
+        method: 'DELETE',
+        url: `/v1/sessions/${sessionID}/jobs/${jobID}`
+      })
+    };
+    await requestAPI(requestInit);
+  }
 }

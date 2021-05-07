@@ -47,16 +47,44 @@ export class PulsarFinkSQLWidget extends BoxPanel {
   }
 
   async onCloseRequest(msg: Message): Promise<void> {
-    const sessionID = sessionStorage.getItem('session_id');
-    if (sessionID) {
-      await Api.closeFlinkSession(sessionID);
-    }
+    await this._clearSessionAndJob();
     super.onCloseRequest(msg);
   }
 
   private async _sendSQL(emitter: Widget, content: string): Promise<void> {
+    const sessionID = sessionStorage.getItem('session_id');
+    await this._clearJob(sessionID);
+
     const response = await Api.postSQL(content);
-    this.dataView.data = response.results[0];
-    console.log('Data has been received from backend', response);
+    if (response.statement_types.includes('SELECT')) {
+      const jobID = response.results[0].data[0][0];
+      sessionStorage.setItem('job_id', jobID);
+
+      let token = 0;
+      setTimeout(async () => {
+        const response = await Api.getDataFromJob(jobID, token);
+        token++;
+        this.dataView.data = response.results[0];
+      }, 5000);
+    } else {
+      this.dataView.data = response.results[0];
+    }
+  }
+
+  private async _clearJob(sessionID: string) {
+    const jobID = sessionStorage.getItem('job_id');
+    if (sessionID && jobID) {
+      await Api.closeFlinkJob(sessionID, jobID);
+      sessionStorage.removeItem('job_id');
+    }
+  }
+
+  private async _clearSessionAndJob() {
+    const sessionID = sessionStorage.getItem('session_id');
+    if (sessionID) {
+      await this._clearJob(sessionID);
+      await Api.closeFlinkSession(sessionID);
+      sessionStorage.removeItem('session_id');
+    }
   }
 }
