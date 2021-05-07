@@ -30,7 +30,12 @@ export class DataGridPanel extends StackedPanel {
     this.addWidget(this._grid);
   }
 
+  get data(): ISQLResult {
+    return this._data;
+  }
+
   set data(sqlData: ISQLResult) {
+    this._data = sqlData;
     this._model = new SQLDataModel(sqlData.columns, sqlData.data);
     this._grid.dataModel = this._model;
     sqlData.data.forEach((_, index) => {
@@ -46,6 +51,7 @@ export class DataGridPanel extends StackedPanel {
   private _trans: TranslationBundle;
   private _model: DataModel;
   private _grid: DataGrid;
+  private _data: ISQLResult;
 }
 
 class SQLDataModel extends DataModel {
