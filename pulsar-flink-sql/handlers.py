@@ -1,7 +1,6 @@
 import os
 import json
 
-# from notebook.base.handlers import APIHandler
 from notebook.base.handlers import APIHandler
 from notebook.utils import url_path_join
 
@@ -19,7 +18,8 @@ class GateWayHandler(APIHandler):
         method = input_data.get('method', 'POST')
         data = input_data.get('data', {})
 
-        request_url = 'https://fnk-sql.guosijie.test.sn2.dev' + url
+        cluster_url = os.getenv('X_API_FLINK_CLUSTER')
+        request_url = cluster_url + url
         headers = {
             'Content-Type': 'application/json',
             'Authorization': 'Bearer ' + auth,
