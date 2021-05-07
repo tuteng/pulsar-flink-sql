@@ -6,7 +6,6 @@ import {
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 import { InputDialog } from '@jupyterlab/apputils';
 import { IStateDB } from '@jupyterlab/statedb';
-import { ReadonlyJSONObject } from '@lumino/coreutils';
 
 import { PulsarFinkSQLWidget } from './widget';
 
@@ -31,20 +30,16 @@ function activate(
   app.commands.addCommand(command, {
     label: 'Pulsar Fink SQL',
     execute: async () => {
-      const data = await state.fetch(PLUGIN_ID);
-      if (!data) {
+      const PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
+      if (
+        PulsarCloudAuth === 'null' ||
+        PulsarCloudAuth === 'undefined' ||
+        !PulsarCloudAuth
+      ) {
         const result = await InputDialog.getText({
           title: 'Input a auth token for pulsar cloud'
         });
-        await state.save(PLUGIN_ID, { PulsarCloudAuth: result.value });
-      }
-
-      let PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
-      if (!PulsarCloudAuth) {
-        PulsarCloudAuth = (data as ReadonlyJSONObject)[
-          'PulsarCloudAuth'
-        ] as string;
-        sessionStorage.setItem('pulsar_cloud_auth', PulsarCloudAuth);
+        sessionStorage.setItem('pulsar_cloud_auth', result.value);
       }
 
       if (!widget || widget.isDisposed) {

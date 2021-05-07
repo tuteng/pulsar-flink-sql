@@ -39,7 +39,7 @@ export class PulsarFinkSQLWidget extends BoxPanel {
    */
   async onUpdateRequest(msg: Message): Promise<void> {
     const sessionID = sessionStorage.getItem('session_id');
-    if (!sessionID) {
+    if (sessionID === 'undefined' || sessionID === 'null' || !sessionID) {
       const response = await Api.getFlinkSession();
       const { session_id } = response;
       sessionStorage.setItem('session_id', session_id);
