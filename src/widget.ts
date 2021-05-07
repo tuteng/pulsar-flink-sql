@@ -6,6 +6,7 @@ import { editorServices } from '@jupyterlab/codemirror';
 
 import { Editor, IEditor } from './editor';
 import { TopToolbar } from './toolbar';
+import { DataGridPanel } from './grid';
 import { Api } from './services';
 
 export class PulsarFinkSQLWidget extends BoxPanel {
@@ -20,15 +21,18 @@ export class PulsarFinkSQLWidget extends BoxPanel {
     this.editor = new Editor('', editorServices.factoryService);
     this.editor.widget.id = 'pf-sql-editor';
     this.toolbar = new TopToolbar();
+    this.dataView = new DataGridPanel();
 
     this.addWidget(this.toolbar);
     this.addWidget(this.editor.widget);
+    this.addWidget(this.dataView);
 
     this.editor.widget.stateChanged.connect(this._sendSQL, this);
   }
 
   readonly editor: IEditor;
   readonly toolbar: Toolbar;
+  readonly dataView: DataGridPanel;
 
   /**
    * Handle update requests for the widget.
@@ -52,6 +56,7 @@ export class PulsarFinkSQLWidget extends BoxPanel {
 
   private async _sendSQL(emitter: Widget, content: string): Promise<void> {
     const response = await Api.postSQL(content);
+    this.dataView.data = response.results[0];
     console.log('Data has been received from backend', response);
   }
 }

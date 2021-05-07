@@ -58,7 +58,7 @@ export namespace Api {
     await requestAPI(requestInit);
   }
 
-  export async function postSQL(statement: string): Promise<ISessionResponse> {
+  export async function postSQL(statement: string): Promise<any> {
     const sessionID = sessionStorage.getItem('session_id');
     const requestInit: RequestInit = {
       method: 'POST',

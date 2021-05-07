@@ -8,32 +8,45 @@ import { DataGrid, DataModel } from '@lumino/datagrid';
 
 import { StackedPanel } from '@lumino/widgets';
 
+interface ISQLResult {
+  columns: Array<any>;
+  data: Array<any>;
+}
 export class DataGridPanel extends StackedPanel {
   constructor(translator?: ITranslator) {
     super();
     this._translator = translator || nullTranslator;
     this._trans = this._translator.load('jupyterlab');
 
-    this.addClass('jp-example-view');
-    this.id = 'datagrid-example';
-    this.title.label = this._trans.__('Datagrid Example View');
+    this.addClass('jp-pf-sql-view');
+    this.id = 'pf-sql-view';
+    this.title.label = this._trans.__('Pulsar Flink Data View');
     this.title.closable = true;
 
-    const model = new SQLDataModel([]);
-    const grid = new DataGrid();
-    grid.dataModel = model;
+    this._model = new SQLDataModel([], []);
+    this._grid = new DataGrid();
+    this._grid.dataModel = this._model;
+    this._grid.hide();
+    this.addWidget(this._grid);
+  }
 
-    this.addWidget(grid);
+  set data(sqlData: ISQLResult) {
+    this._model = new SQLDataModel(sqlData.columns, sqlData.data);
+    this._grid.dataModel = this._model;
+    this._grid.show();
   }
 
   private _translator: ITranslator;
   private _trans: TranslationBundle;
+  private _model: DataModel;
+  private _grid: DataGrid;
 }
 
 class SQLDataModel extends DataModel {
-  constructor(data: Array<any>) {
+  constructor(columns: Array<any>, data: Array<any>) {
     super();
     this._data = data;
+    this._columns = columns;
   }
 
   rowCount(region: DataModel.RowRegion): number {
@@ -41,21 +54,22 @@ class SQLDataModel extends DataModel {
   }
 
   columnCount(region: DataModel.ColumnRegion): number {
-    return region === 'body' ? 5 : 1;
+    return region === 'body' ? this._columns.length : 1;
   }
 
   data(region: DataModel.CellRegion, row: number, column: number): any {
     if (region === 'row-header') {
-      return `R: ${row}, ${column}`;
+      return row;
     }
     if (region === 'column-header') {
-      return `C: ${row}, ${column}`;
+      return this._columns[column].name;
     }
     if (region === 'corner-header') {
-      return `N: ${row}, ${column}`;
+      return 'index';
     }
-    return `(${row}, ${column})`;
+    return this._data[row][column];
   }
 
   private _data: Array<any>;
+  private _columns: Array<any>;
 }
