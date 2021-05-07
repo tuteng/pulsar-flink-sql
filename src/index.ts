@@ -31,7 +31,11 @@ function activate(
     label: 'Pulsar Fink SQL',
     execute: async () => {
       const PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
-      if (PulsarCloudAuth === 'null' || PulsarCloudAuth === 'undefined' || !PulsarCloudAuth) {
+      if (
+        PulsarCloudAuth === 'null' ||
+        PulsarCloudAuth === 'undefined' ||
+        !PulsarCloudAuth
+      ) {
         const result = await InputDialog.getText({
           title: 'Input a auth token for pulsar cloud'
         });
