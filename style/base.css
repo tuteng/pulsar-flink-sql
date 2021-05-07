@@ -1,0 +1,30 @@
+.pf-sql-toolbar {
+  height: 24px !important;
+}
+
+.pf-sql-editor {
+  top: 30px !important;
+  height: auto !important;
+  padding: 20px;
+}
+
+.CodeMirror {
+  width: auto !important;
+}
+
+.pf-sql-editor .CodeMirror {
+  background: transparent;
+  background: var(--jp-cell-editor-background);
+  border: var(--jp-border-width) solid var(--jp-cell-editor-border-color);
+  border-radius: 0px;
+}
+
+.pf-sql-editor.jp-mod-focused .CodeMirror{
+  border: var(--jp-border-width) solid var(--jp-cell-editor-active-border-color);
+  background: var(--jp-cell-editor-active-background);
+  box-shadow: var(--jp-input-box-shadow);
+}
+
+.jp-Toolbar > .jp-Toolbar-item {
+  padding-left: 10px;
+}

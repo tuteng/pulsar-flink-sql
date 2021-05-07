@@ -4,8 +4,13 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
+import { InputDialog } from '@jupyterlab/apputils';
+import { IStateDB } from '@jupyterlab/statedb';
+import { ReadonlyJSONObject } from '@lumino/coreutils';
 
 import { PulsarFinkSQLWidget } from './widget';
+
+const PLUGIN_ID = 'pulsar-flink-sql';
 
 /**
  * Activate the Pulsar Flink SQL widget extension.
@@ -13,7 +18,8 @@ import { PulsarFinkSQLWidget } from './widget';
 function activate(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
-  restorer: ILayoutRestorer
+  restorer: ILayoutRestorer,
+  state: IStateDB
 ): void {
   console.log('JupyterLab extension jupyterlab_pulsar_flink_sql is activated!');
 
@@ -24,12 +30,28 @@ function activate(
   const command = 'apod:open';
   app.commands.addCommand(command, {
     label: 'Pulsar Fink SQL',
-    execute: () => {
+    execute: async () => {
+      const data = await state.fetch(PLUGIN_ID);
+      if (!data) {
+        const result = await InputDialog.getText({
+          title: 'Input a auth token for pulsar cloud'
+        });
+        await state.save(PLUGIN_ID, { PulsarCloudAuth: result.value });
+      }
+
+      let PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
+      if (!PulsarCloudAuth) {
+        PulsarCloudAuth = (data as ReadonlyJSONObject)[
+          'PulsarCloudAuth'
+        ] as string;
+        sessionStorage.setItem('pulsar_cloud_auth', PulsarCloudAuth);
+      }
+
       if (!widget || widget.isDisposed) {
         // Create a new widget if one does not exist
         // or if the previous one was disposed after closing the panel
         widget = new PulsarFinkSQLWidget();
-        widget.id = 'pulsar-flink-sql';
+        widget.id = 'pf-sql';
         widget.title.label = 'Pulsar Fink SQL';
         widget.title.closable = true;
       }
@@ -50,7 +72,7 @@ function activate(
   });
 
   // Add the command to the palette.
-  palette.addItem({ command, category: 'Tutorial' });
+  palette.addItem({ command, category: 'Pulsar' });
 
   // Track and restore the widget state
   const tracker = new WidgetTracker<PulsarFinkSQLWidget>({
@@ -66,9 +88,9 @@ function activate(
  * Initialization data for the pulsar-flink-sql extension.
  */
 const extension: JupyterFrontEndPlugin<void> = {
-  id: 'pulsar-flink-sql',
+  id: PLUGIN_ID,
   autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer],
+  requires: [ICommandPalette, ILayoutRestorer, IStateDB],
   activate: activate
 };
 
