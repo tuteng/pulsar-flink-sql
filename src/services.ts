@@ -5,6 +5,10 @@ interface ISessionResponse {
   session_id: string;
 }
 
+export interface IErrorResponse {
+  errors: Array<string>;
+}
+
 export namespace Api {
   export async function requestAPI(init: RequestInit = {}): Promise<Response> {
     const PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
@@ -58,7 +62,7 @@ export namespace Api {
     await requestAPI(requestInit);
   }
 
-  export async function postSQL(statement: string): Promise<any> {
+  export async function postSQL<T>(statement: string): Promise<T | any> {
     const sessionID = sessionStorage.getItem('session_id');
     const requestInit: RequestInit = {
       method: 'POST',
