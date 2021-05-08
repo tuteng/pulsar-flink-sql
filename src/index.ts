@@ -5,7 +5,6 @@ import {
 } from '@jupyterlab/application';
 import { ICommandPalette, WidgetTracker } from '@jupyterlab/apputils';
 import { InputDialog } from '@jupyterlab/apputils';
-import { IStateDB } from '@jupyterlab/statedb';
 
 import { PulsarFinkSQLWidget } from './widget';
 
@@ -17,8 +16,7 @@ const PLUGIN_ID = 'pulsar-flink-sql';
 function activate(
   app: JupyterFrontEnd,
   palette: ICommandPalette,
-  restorer: ILayoutRestorer,
-  state: IStateDB
+  restorer: ILayoutRestorer
 ): void {
   console.log('JupyterLab extension jupyterlab_pulsar_flink_sql is activated!');
 
@@ -85,7 +83,7 @@ function activate(
 const extension: JupyterFrontEndPlugin<void> = {
   id: PLUGIN_ID,
   autoStart: true,
-  requires: [ICommandPalette, ILayoutRestorer, IStateDB],
+  requires: [ICommandPalette, ILayoutRestorer],
   activate: activate
 };
 
