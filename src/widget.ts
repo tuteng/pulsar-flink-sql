@@ -7,7 +7,7 @@ import { editorServices } from '@jupyterlab/codemirror';
 import { Editor, IEditor } from './editor';
 import { TopToolbar } from './toolbar';
 import { DataGridPanel } from './grid';
-import { IErrorResponse, Api } from './services';
+import { Api } from './services';
 
 export class PulsarFinkSQLWidget extends BoxPanel {
   /**
@@ -55,11 +55,12 @@ export class PulsarFinkSQLWidget extends BoxPanel {
     const sessionID = sessionStorage.getItem('session_id');
     await this._clearJob(sessionID);
 
-    const response = await Api.postSQL<IErrorResponse | any>(content);
-    if (response.errors) {
+    const response = await Api.postSQL(content);
+    if (response.kind === 'error') {
       await showErrorMessage('Message', response.errors[0]);
       return;
     }
+
     if (response.statement_types.includes('SELECT')) {
       const jobID = response.results[0].data[0][0];
       sessionStorage.setItem('job_id', jobID);

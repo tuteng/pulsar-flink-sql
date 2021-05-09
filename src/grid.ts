@@ -3,15 +3,32 @@ import {
   nullTranslator,
   TranslationBundle
 } from '@jupyterlab/translation';
-
+import { StackedPanel } from '@lumino/widgets';
 import { DataGrid, DataModel } from '@lumino/datagrid';
 
-import { StackedPanel } from '@lumino/widgets';
+export namespace DataGridResponse {
+  interface IColumn {
+    name: string;
+    type: string;
+  }
 
-interface ISQLResult {
-  columns: Array<any>;
-  data: Array<any>;
+  export interface IData {
+    columns: Array<IColumn>;
+    data: Array<Array<string>>;
+  }
+
+  export interface IDataResponse {
+    kind: 'success';
+    results: Array<IData>;
+    statement_types: Array<string>;
+  }
+
+  export interface IJobResponse {
+    next_result_uri: string;
+    results: Array<IData>;
+  }
 }
+
 export class DataGridPanel extends StackedPanel {
   constructor(translator?: ITranslator) {
     super();
@@ -30,11 +47,11 @@ export class DataGridPanel extends StackedPanel {
     this.addWidget(this._grid);
   }
 
-  get data(): ISQLResult {
+  get data(): DataGridResponse.IData {
     return this._data;
   }
 
-  set data(sqlData: ISQLResult) {
+  set data(sqlData: DataGridResponse.IData) {
     this._data = sqlData;
     this._model = new SQLDataModel(sqlData.columns, sqlData.data);
     this._grid.dataModel = this._model;
@@ -51,7 +68,7 @@ export class DataGridPanel extends StackedPanel {
   private _trans: TranslationBundle;
   private _model: DataModel;
   private _grid: DataGrid;
-  private _data: ISQLResult;
+  private _data: DataGridResponse.IData;
 }
 
 class SQLDataModel extends DataModel {
