@@ -1,7 +1,7 @@
 import { Message } from '@lumino/messaging';
 
 import { BoxPanel, Widget } from '@lumino/widgets';
-import { Toolbar } from '@jupyterlab/apputils';
+import { Toolbar, showErrorMessage } from '@jupyterlab/apputils';
 import { editorServices } from '@jupyterlab/codemirror';
 
 import { Editor, IEditor } from './editor';
@@ -56,6 +56,11 @@ export class PulsarFinkSQLWidget extends BoxPanel {
     await this._clearJob(sessionID);
 
     const response = await Api.postSQL(content);
+    if (response.kind === 'error') {
+      await showErrorMessage('Message', response.errors[0]);
+      return;
+    }
+
     if (response.statement_types.includes('SELECT')) {
       const jobID = response.results[0].data[0][0];
       sessionStorage.setItem('job_id', jobID);

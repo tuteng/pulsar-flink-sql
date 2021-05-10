@@ -1,8 +1,15 @@
 import { URLExt } from '@jupyterlab/coreutils';
 import { ServerConnection } from '@jupyterlab/services';
 
+import { DataGridResponse } from './grid';
+
 interface ISessionResponse {
   session_id: string;
+}
+
+interface IErrorResponse {
+  kind: 'error';
+  errors: Array<string>;
 }
 
 export namespace Api {
@@ -58,7 +65,9 @@ export namespace Api {
     await requestAPI(requestInit);
   }
 
-  export async function postSQL(statement: string): Promise<any> {
+  export async function postSQL(
+    statement: string
+  ): Promise<DataGridResponse.IDataResponse | IErrorResponse> {
     const sessionID = sessionStorage.getItem('session_id');
     const requestInit: RequestInit = {
       method: 'POST',
@@ -70,13 +79,14 @@ export namespace Api {
     };
     const response = await requestAPI(requestInit);
     const data = await response.json();
+    data.kind = data.errors ? 'error' : 'success';
     return data;
   }
 
   export async function getDataFromJob(
     job: string,
     token?: number
-  ): Promise<any> {
+  ): Promise<DataGridResponse.IJobResponse> {
     const sessionID = sessionStorage.getItem('session_id');
 
     let url = job;
