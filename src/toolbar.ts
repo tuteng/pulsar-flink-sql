@@ -9,6 +9,7 @@ interface IOptions {
 class RunButton extends ToolbarButton {
   constructor(options: IOptions) {
     super({
+      tooltip: 'Run',
       iconClass: 'jp-RunIcon jp-Icon jp-Icon-16',
       onClick: options.onClick
     });
@@ -18,6 +19,7 @@ class RunButton extends ToolbarButton {
 class SettingButton extends ToolbarButton {
   constructor(options: IOptions) {
     super({
+      tooltip: 'Setting',
       iconClass: 'jp-SettingsIcon jp-Icon jp-Icon-16',
       onClick: options.onClick
     });
@@ -27,22 +29,35 @@ class SettingButton extends ToolbarButton {
 export class TopToolbar extends Toolbar {
   constructor() {
     super();
+    this._onRunButtonClicked = this._onRunButtonClicked.bind(this);
+    this._onSettingButtonClicked = this._onSettingButtonClicked.bind(this);
+
     this.addClass('pf-sql-toolbar');
+
     this.addItem('run', new RunButton({ onClick: this._onRunButtonClicked }));
     this.addItem(
       'setting',
-      new SettingButton({ onClick: this._onRunButtonClicked })
+      new SettingButton({ onClick: this._onSettingButtonClicked })
     );
     this.addItem('spacer', Toolbar.createSpacerItem());
   }
 
-  get backButtonClicked(): ISignal<this, void> {
+  public get runButtonClicked(): ISignal<this, void> {
     return this._runButtonClicked;
   }
 
-  private _onRunButtonClicked(): void {
-    // this._backRunClicked.emit(void 0);
+  get settingButtonClicked(): ISignal<this, void> {
+    return this._settingButtonClicked;
   }
 
-  private readonly _runButtonClicked: Signal<this, void> = new Signal(this);
+  private _onRunButtonClicked(): void {
+    this._runButtonClicked.emit(void 0);
+  }
+
+  private _onSettingButtonClicked(): void {
+    this._settingButtonClicked.emit(void 0);
+  }
+
+  private readonly _runButtonClicked = new Signal<this, void>(this);
+  private readonly _settingButtonClicked = new Signal<this, void>(this);
 }
