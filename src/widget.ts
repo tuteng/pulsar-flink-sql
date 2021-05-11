@@ -1,7 +1,7 @@
 import { Message } from '@lumino/messaging';
 
 import { BoxPanel, Widget } from '@lumino/widgets';
-import { Toolbar, showErrorMessage } from '@jupyterlab/apputils';
+import { InputDialog, showErrorMessage } from '@jupyterlab/apputils';
 import { editorServices } from '@jupyterlab/codemirror';
 
 import { Editor, IEditor } from './editor';
@@ -28,10 +28,12 @@ export class PulsarFinkSQLWidget extends BoxPanel {
     this.addWidget(this.dataView);
 
     this.editor.widget.stateChanged.connect(this._sendSQL, this);
+    this.toolbar.runButtonClicked.connect(this._handleContent, this);
+    this.toolbar.settingButtonClicked.connect(this._setAuth, this);
   }
 
   readonly editor: IEditor;
-  readonly toolbar: Toolbar;
+  readonly toolbar: TopToolbar;
   readonly dataView: DataGridPanel;
 
   /**
@@ -100,5 +102,25 @@ export class PulsarFinkSQLWidget extends BoxPanel {
       data: dataCompose
     };
     setTimeout(async () => this._jobCallback(response.next_result_uri), 5000);
+  }
+
+  private async _setAuth(): Promise<void> {
+    const PulsarCloudAuth = sessionStorage.getItem('pulsar_cloud_auth');
+
+    const result = await InputDialog.getText({
+      title: 'Input a auth token for pulsar cloud',
+      text: PulsarCloudAuth
+    });
+
+    if (result.button.label === 'OK') {
+      sessionStorage.setItem('pulsar_cloud_auth', result.value);
+    }
+  }
+
+  private async _handleContent(emitter: Widget): Promise<void> {
+    const text = this.editor.widget.model.value.text;
+    if (text) {
+      await this._sendSQL(emitter, text);
+    }
   }
 }
